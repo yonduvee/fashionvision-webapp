@@ -1,14 +1,12 @@
-import { useState } from "react"
-import {
-  Upload,
-  BrainCircuit,
-  BarChart3,
-  Grid3X3,
-  ArrowRight,
-} from "lucide-react"
+import { useEffect, useState } from "react"
+import { Upload } from "lucide-react"
+
 import ModelComparison from "./components/ModelComparison"
 import Results from "./components/Results"
 import About from "./components/About"
+
+// Import the showcase image
+import heroImage from "./assets/Neural Fashion AI Sneaker Showcase.png"
 
 function App() {
   const [selectedImage, setSelectedImage] = useState(null)
@@ -22,8 +20,14 @@ function App() {
 
   const apiUrl = "https://fashionvision-webapp.onrender.com"
 
+  useEffect(() => {
+    return () => {
+      if (selectedImage) URL.revokeObjectURL(selectedImage)
+    }
+  }, [selectedImage])
+
   const handleImageChange = (event) => {
-    const file = event.target.files[0]
+    const file = event.target.files?.[0]
 
     if (!file) return
 
@@ -61,8 +65,8 @@ function App() {
       const data = await response.json()
 
       setPrediction(data.prediction)
-      setConfidence(data.confidence)
-      setTopPredictions(data.top_predictions)
+      setConfidence(Number(data.confidence) || 0)
+      setTopPredictions(data.top_predictions || [])
     } catch {
       setError("Could not connect to the prediction server.")
     } finally {
@@ -70,41 +74,10 @@ function App() {
     }
   }
 
-  const featureCards = [
-    {
-      title: "Image Upload",
-      description: "Upload a fashion image for prediction.",
-      icon: Upload,
-      href: "#demo",
-      link: "Go to demo",
-    },
-    {
-      title: "CNN Prediction",
-      description: "Get the predicted class and confidence score.",
-      icon: BrainCircuit,
-      href: "#demo",
-      link: "Try prediction",
-    },
-    {
-      title: "Model Comparison",
-      description: "Compare Dense Network and CNN performance.",
-      icon: BarChart3,
-      href: "#comparison",
-      link: "View comparison",
-    },
-    {
-      title: "Visual Results",
-      description: "Explore confusion matrix and training results.",
-      icon: Grid3X3,
-      href: "#results",
-      link: "View results",
-    },
-  ]
-
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-6">
           <a href="#home" className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white">
               FV
@@ -114,7 +87,6 @@ function App() {
               <h1 className="text-lg font-bold">
                 FashionVision AI
               </h1>
-
               <p className="text-xs text-slate-500">
                 Deep Learning Image Classifier
               </p>
@@ -170,111 +142,80 @@ function App() {
       <main>
         <section
           id="home"
-          className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2"
+          className="mx-auto max-w-7xl px-5 py-12 sm:px-6 md:py-20"
         >
-          <div>
-            <div className="mb-5 inline-flex rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700">
-              CNN Image Classification Project
-            </div>
-
-            <h2 className="max-w-3xl text-5xl font-bold leading-tight tracking-tight md:text-6xl">
-              Fashion Image Classification with{" "}
-              <span className="text-blue-600">
-                Deep Learning
-              </span>
-            </h2>
-
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-              A deep learning project that compares a fully connected neural
-              network with a Convolutional Neural Network for Fashion-MNIST
-              image classification.
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-4">
-              <a
-                href="#demo"
-                className="rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
-              >
-                Try Live Prediction
-              </a>
-
-              <a
-                href="#comparison"
-                className="rounded-xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-600"
-              >
-                View Model Results
-              </a>
-            </div>
-
-            <div className="mt-10 grid max-w-xl grid-cols-3 gap-4">
-              <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                <p className="text-2xl font-bold text-blue-600">
-                  10
-                </p>
-
-                <p className="mt-1 text-sm text-slate-500">
-                  Fashion Classes
-                </p>
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+            <div>
+              <div className="mb-5 inline-flex rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700">
+                CNN Image Classification Project
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                <p className="text-2xl font-bold text-blue-600">
-                  28×28
-                </p>
+              <h2 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+                Fashion Image Classification with{" "}
+                <span className="text-blue-600">
+                  Deep Learning
+                </span>
+              </h2>
 
-                <p className="mt-1 text-sm text-slate-500">
-                  Image Size
-                </p>
+              <p className="mt-6 text-base leading-8 text-slate-600 sm:text-lg">
+                A deep learning project that compares a fully connected
+                neural network with a Convolutional Neural Network for
+                Fashion-MNIST image classification.
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-4">
+                <a
+                  href="#demo"
+                  className="rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
+                >
+                  Try Live Prediction
+                </a>
+
+                <a
+                  href="#comparison"
+                  className="rounded-xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-600"
+                >
+                  View Model Results
+                </a>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                <p className="text-2xl font-bold text-blue-600">
-                  CNN
-                </p>
-
-                <p className="mt-1 text-sm text-slate-500">
-                  Best Model
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
-              <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {featureCards.map((item) => {
-                    const Icon = item.icon
-
-                    return (
-                      <a
-                        key={item.title}
-                        href={item.href}
-                        className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg"
-                      >
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                          <Icon size={23} />
-                        </div>
-
-                        <h3 className="mt-5 text-lg font-semibold text-slate-900">
-                          {item.title}
-                        </h3>
-
-                        <p className="mt-2 text-sm leading-6 text-slate-500">
-                          {item.description}
-                        </p>
-
-                        <div className="mt-5 flex items-center gap-2 text-sm font-semibold text-blue-600">
-                          <span>{item.link}</span>
-                          <ArrowRight
-                            size={16}
-                            className="transition-transform duration-300 group-hover:translate-x-1"
-                          />
-                        </div>
-                      </a>
-                    )
-                  })}
+              <div className="mt-10 grid max-w-xl grid-cols-3 gap-3 sm:gap-4">
+                <div className="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4">
+                  <p className="text-xl font-bold text-blue-600 sm:text-2xl">
+                    10
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500 sm:text-sm">
+                    Fashion Classes
+                  </p>
                 </div>
+
+                <div className="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4">
+                  <p className="text-xl font-bold text-blue-600 sm:text-2xl">
+                    28×28
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500 sm:text-sm">
+                    Image Size
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4">
+                  <p className="text-xl font-bold text-blue-600 sm:text-2xl">
+                    90.41%
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500 sm:text-sm">
+                    CNN Accuracy
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative flex justify-center">
+              <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl transition-all hover:shadow-2xl">
+                <img
+                  src={heroImage}
+                  alt="Neural Fashion AI Sneaker Showcase"
+                  className="h-auto w-full max-w-lg object-cover"
+                />
               </div>
             </div>
           </div>
@@ -284,7 +225,7 @@ function App() {
           id="demo"
           className="border-t border-slate-200 bg-white"
         >
-          <div className="mx-auto max-w-7xl px-6 py-20">
+          <div className="mx-auto max-w-7xl px-5 py-20 sm:px-6">
             <div className="mx-auto max-w-3xl text-center">
               <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
                 Live Demo
@@ -300,7 +241,7 @@ function App() {
             </div>
 
             <div className="mt-12 grid gap-8 lg:grid-cols-2">
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 sm:p-6">
                 <h3 className="text-xl font-semibold">
                   Upload Image
                 </h3>
@@ -318,7 +259,7 @@ function App() {
                     Choose an image
                   </p>
 
-                  <p className="mt-2 max-w-sm truncate text-sm text-slate-500">
+                  <p className="mt-2 max-w-full truncate text-sm text-slate-500">
                     {fileName || "PNG, JPG or JPEG"}
                   </p>
 
@@ -339,21 +280,24 @@ function App() {
                 </button>
 
                 {error && (
-                  <p className="mt-4 text-sm font-medium text-red-600">
+                  <p
+                    role="alert"
+                    className="mt-4 text-sm font-medium text-red-600"
+                  >
                     {error}
                   </p>
                 )}
 
                 <div className="mt-5 rounded-2xl bg-blue-50 p-4">
                   <p className="text-sm leading-6 text-blue-800">
-                    For best results, use a single clothing item with a simple
-                    background.
+                    For best results, use a single clothing item with
+                    a simple background.
                   </p>
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between gap-4">
+              <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
                     <h3 className="text-xl font-semibold">
                       Prediction Result
@@ -425,7 +369,7 @@ function App() {
                       <div
                         className="h-full rounded-full bg-blue-600 transition-all duration-500"
                         style={{
-                          width: `${Math.min(confidence, 100)}%`,
+                          width: `${Math.max(0, Math.min(confidence, 100))}%`,
                         }}
                       ></div>
                     </div>
@@ -447,7 +391,7 @@ function App() {
                             </span>
 
                             <span className="font-semibold text-slate-800">
-                              {item.confidence.toFixed(2)}%
+                              {Number(item.confidence).toFixed(2)}%
                             </span>
                           </div>
 
@@ -455,9 +399,9 @@ function App() {
                             <div
                               className="h-full rounded-full bg-blue-500"
                               style={{
-                                width: `${Math.min(
-                                  item.confidence,
-                                  100
+                                width: `${Math.max(
+                                  0,
+                                  Math.min(Number(item.confidence) || 0, 100)
                                 )}%`,
                               }}
                             ></div>
