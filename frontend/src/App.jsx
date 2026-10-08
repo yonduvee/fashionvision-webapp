@@ -1,4 +1,11 @@
 import { useState } from "react"
+import {
+  Upload,
+  BrainCircuit,
+  BarChart3,
+  Grid3X3,
+  ArrowRight,
+} from "lucide-react"
 import ModelComparison from "./components/ModelComparison"
 import Results from "./components/Results"
 import About from "./components/About"
@@ -62,6 +69,37 @@ function App() {
       setLoading(false)
     }
   }
+
+  const featureCards = [
+    {
+      title: "Image Upload",
+      description: "Upload a fashion image for prediction.",
+      icon: Upload,
+      href: "#demo",
+      link: "Go to demo",
+    },
+    {
+      title: "CNN Prediction",
+      description: "Get the predicted class and confidence score.",
+      icon: BrainCircuit,
+      href: "#demo",
+      link: "Try prediction",
+    },
+    {
+      title: "Model Comparison",
+      description: "Compare Dense Network and CNN performance.",
+      icon: BarChart3,
+      href: "#comparison",
+      link: "View comparison",
+    },
+    {
+      title: "Visual Results",
+      description: "Explore confusion matrix and training results.",
+      icon: Grid3X3,
+      href: "#results",
+      link: "View results",
+    },
+  ]
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -203,55 +241,39 @@ function App() {
 
           <div>
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
-              <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-2xl bg-white p-6 shadow-sm">
-                    <div className="mb-4 h-12 w-12 rounded-xl bg-blue-100"></div>
+              <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {featureCards.map((item) => {
+                    const Icon = item.icon
 
-                    <h3 className="font-semibold">
-                      Image Upload
-                    </h3>
+                    return (
+                      <a
+                        key={item.title}
+                        href={item.href}
+                        className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg"
+                      >
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                          <Icon size={23} />
+                        </div>
 
-                    <p className="mt-2 text-sm text-slate-500">
-                      Upload a fashion image for prediction.
-                    </p>
-                  </div>
+                        <h3 className="mt-5 text-lg font-semibold text-slate-900">
+                          {item.title}
+                        </h3>
 
-                  <div className="rounded-2xl bg-white p-6 shadow-sm">
-                    <div className="mb-4 h-12 w-12 rounded-xl bg-green-100"></div>
+                        <p className="mt-2 text-sm leading-6 text-slate-500">
+                          {item.description}
+                        </p>
 
-                    <h3 className="font-semibold">
-                      CNN Prediction
-                    </h3>
-
-                    <p className="mt-2 text-sm text-slate-500">
-                      Get the predicted class and confidence score.
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl bg-white p-6 shadow-sm">
-                    <div className="mb-4 h-12 w-12 rounded-xl bg-purple-100"></div>
-
-                    <h3 className="font-semibold">
-                      Model Comparison
-                    </h3>
-
-                    <p className="mt-2 text-sm text-slate-500">
-                      Compare Dense Network and CNN performance.
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl bg-white p-6 shadow-sm">
-                    <div className="mb-4 h-12 w-12 rounded-xl bg-orange-100"></div>
-
-                    <h3 className="font-semibold">
-                      Visual Results
-                    </h3>
-
-                    <p className="mt-2 text-sm text-slate-500">
-                      Explore confusion matrix and training results.
-                    </p>
-                  </div>
+                        <div className="mt-5 flex items-center gap-2 text-sm font-semibold text-blue-600">
+                          <span>{item.link}</span>
+                          <ArrowRight
+                            size={16}
+                            className="transition-transform duration-300 group-hover:translate-x-1"
+                          />
+                        </div>
+                      </a>
+                    )
+                  })}
                 </div>
               </div>
             </div>
@@ -288,8 +310,8 @@ function App() {
                 </p>
 
                 <label className="mt-6 flex min-h-80 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-blue-300 bg-white px-6 text-center transition hover:border-blue-500 hover:bg-blue-50">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-100 text-2xl text-blue-600">
-                    ↑
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-100 text-blue-600">
+                    <Upload size={28} />
                   </div>
 
                   <p className="mt-5 text-lg font-semibold text-slate-800">
