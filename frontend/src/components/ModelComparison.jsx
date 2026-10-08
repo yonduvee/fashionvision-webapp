@@ -45,7 +45,7 @@ function ModelComparison() {
                 </p>
 
                 <p className="mt-2 text-3xl font-bold text-slate-900">
-                  —
+                  87.43%
                 </p>
               </div>
 
@@ -55,7 +55,7 @@ function ModelComparison() {
                 </p>
 
                 <p className="mt-2 text-3xl font-bold text-slate-900">
-                  —
+                  109,386
                 </p>
               </div>
             </div>
@@ -126,7 +126,7 @@ function ModelComparison() {
                 </p>
 
                 <p className="mt-2 text-3xl font-bold text-blue-700">
-                  —
+                  90.41%
                 </p>
               </div>
 
@@ -136,7 +136,7 @@ function ModelComparison() {
                 </p>
 
                 <p className="mt-2 text-3xl font-bold text-blue-700">
-                  —
+                  225,034
                 </p>
               </div>
             </div>
