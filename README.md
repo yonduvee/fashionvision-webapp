@@ -72,6 +72,10 @@ The Fashion-MNIST dataset contains 70,000 grayscale images across 10 clothing ca
 | 8 | Bag |
 | 9 | Ankle Boot |
 
+ ##View Sample Images on Google Drive
+
+ https://drive.google.com/drive/folders/1_t0ezhTUaGKYbslqU9VGXufE5JnN5C9s?usp=sharing
+
 ### Model Comparison
 
 **Dense Neural Network (DNN)**
