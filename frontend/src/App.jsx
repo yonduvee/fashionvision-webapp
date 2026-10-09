@@ -16,6 +16,7 @@ function App() {
   const [selectedImage, setSelectedImage] = useState(null)
   const [selectedFile, setSelectedFile] = useState(null)
   const [fileName, setFileName] = useState("")
+  const [modelInputImage, setModelInputImage] = useState(null)
   const [prediction, setPrediction] = useState(null)
   const [confidence, setConfidence] = useState(0)
   const [topPredictions, setTopPredictions] = useState([])
@@ -30,12 +31,89 @@ function App() {
     }
   }, [selectedImage])
 
+  const generateModelInputPreview = (file) => {
+    const reader = new FileReader()
+
+    reader.onload = () => {
+      const image = new Image()
+
+      image.onload = () => {
+        const canvas = document.createElement("canvas")
+        canvas.width = 28
+        canvas.height = 28
+
+        const ctx = canvas.getContext("2d")
+
+        if (!ctx) return
+
+        ctx.fillStyle = "#000000"
+        ctx.fillRect(0, 0, 28, 28)
+
+        const scale = Math.min(
+          28 / image.width,
+          28 / image.height
+        )
+
+        const width = image.width * scale
+        const height = image.height * scale
+
+        ctx.drawImage(
+          image,
+          (28 - width) / 2,
+          (28 - height) / 2,
+          width,
+          height
+        )
+
+        const imageData = ctx.getImageData(0, 0, 28, 28)
+        const data = imageData.data
+
+        for (let i = 0; i < data.length; i += 4) {
+          const alpha = data[i + 3] / 255
+
+          const red = data[i] * alpha
+          const green = data[i + 1] * alpha
+          const blue = data[i + 2] * alpha
+
+          const gray =
+            0.299 * red +
+            0.587 * green +
+            0.114 * blue
+
+          data[i] = gray
+          data[i + 1] = gray
+          data[i + 2] = gray
+          data[i + 3] = 255
+        }
+
+        ctx.putImageData(imageData, 0, 0)
+
+        setModelInputImage(canvas.toDataURL("image/png"))
+      }
+
+      image.onerror = () => {
+        setError("Unable to process the selected image.")
+      }
+
+      image.src = reader.result
+    }
+
+    reader.onerror = () => {
+      setError("Unable to read the selected image.")
+    }
+
+    reader.readAsDataURL(file)
+  }
+
   const handleImageChange = (event) => {
     const file = event.target.files?.[0]
 
     if (!file) return
 
-    const allowedTypes = ["image/png", "image/jpeg"]
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg"
+    ]
 
     if (!allowedTypes.includes(file.type)) {
       setError("Please select a PNG, JPG, or JPEG image.")
@@ -46,10 +124,15 @@ function App() {
     setSelectedFile(file)
     setFileName(file.name)
     setSelectedImage(URL.createObjectURL(file))
+    setModelInputImage(null)
     setPrediction(null)
     setConfidence(0)
     setTopPredictions([])
     setError("")
+
+    generateModelInputPreview(file)
+
+    event.target.value = ""
   }
 
   const handlePrediction = async () => {
@@ -70,7 +153,7 @@ function App() {
     try {
       const response = await fetch(`${API_URL}/predict`, {
         method: "POST",
-        body: formData,
+        body: formData
       })
 
       if (!response.ok) {
@@ -81,6 +164,7 @@ function App() {
 
       setPrediction(data.prediction ?? null)
       setConfidence(Number(data.confidence) || 0)
+
       setTopPredictions(
         Array.isArray(data.top_predictions)
           ? data.top_predictions
@@ -96,7 +180,10 @@ function App() {
   }
 
   const limitPercentage = (value) => {
-    return Math.max(0, Math.min(Number(value) || 0, 100))
+    return Math.max(
+      0,
+      Math.min(Number(value) || 0, 100)
+    )
   }
 
   return (
@@ -285,8 +372,8 @@ function App() {
                 </a>
 
                 <p className="text-sm text-slate-500">
-                  Not sure which image to upload? Explore our
-                  sample fashion images.
+                  Not sure which image to upload?
+                  Explore our sample fashion images.
                 </p>
               </div>
             </div>
@@ -403,9 +490,28 @@ function App() {
                       Model Input
                     </p>
 
-                    <div className="mt-4 flex aspect-square items-center justify-center rounded-xl bg-slate-900 px-6 text-center text-sm text-slate-400">
-                      28 × 28 grayscale image
+                    <div className="mt-4 flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-slate-900 p-4">
+                      {modelInputImage ? (
+                        <img
+                          src={modelInputImage}
+                          alt="28 by 28 grayscale model input preview"
+                          className="h-full w-full object-contain"
+                          style={{
+                            imageRendering: "pixelated"
+                          }}
+                        />
+                      ) : (
+                        <span className="text-center text-sm text-slate-400">
+                          28 × 28 grayscale image
+                        </span>
+                      )}
                     </div>
+
+                    {modelInputImage && (
+                      <p className="mt-3 text-center text-xs text-slate-500">
+                        28 × 28 Grayscale Preview
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -433,7 +539,7 @@ function App() {
                       <div
                         className="h-full rounded-full bg-blue-600 transition-all duration-500"
                         style={{
-                          width: `${limitPercentage(confidence)}%`,
+                          width: `${limitPercentage(confidence)}%`
                         }}
                       />
                     </div>
@@ -447,7 +553,7 @@ function App() {
                     </h4>
 
                     <div className="mt-5 space-y-4">
-                      {topPredictions.map((item, index) => (
+                      {topPredictions.slice(0, 3).map((item, index) => (
                         <div
                           key={`${item.class}-${index}`}
                         >
@@ -457,10 +563,7 @@ function App() {
                             </span>
 
                             <span className="font-semibold text-slate-800">
-                              {(
-                                Number(item.confidence) || 0
-                              ).toFixed(2)}
-                              %
+                              {(Number(item.confidence) || 0).toFixed(2)}%
                             </span>
                           </div>
 
@@ -470,7 +573,7 @@ function App() {
                               style={{
                                 width: `${limitPercentage(
                                   item.confidence
-                                )}%`,
+                                )}%`
                               }}
                             />
                           </div>
@@ -485,9 +588,7 @@ function App() {
         </section>
 
         <ModelComparison />
-
         <Results />
-
         <About />
       </main>
     </div>
